@@ -17,7 +17,7 @@ class context_reaction_no_cache extends context_reaction {
       '#tree'    => TRUE,
       '#title'   => t('Caching: Core'),
       'no_cache' => array(
-        '#title'         => t('Caching Options'),
+        '#title'         => t('Caching Option'),
         '#description'   => t('Choose to disable Drupal\'s core cache when this context is active.'),
         '#type'          => 'radios',
         '#options'       => $options,
@@ -32,9 +32,10 @@ class context_reaction_no_cache extends context_reaction {
    */
   function execute() {
     foreach (context_active_contexts() as $context) {
-      if (!empty($context->reactions[$this->plugin]['no_cache'])) {
+      if ($context->reactions[$this->plugin]['no_cache'] == 1) {
         //Turn Cache on or off in our context.
-        $GLOBALS['conf']['cache'] = FALSE;
+        global $conf;
+        $conf['cache'] = 0;
       }
     }
   }

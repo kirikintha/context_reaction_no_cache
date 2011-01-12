@@ -12,6 +12,11 @@
  */
 
 /**
+ * @internal definitions.
+ */
+define("CONTEXT_REACTION_NO_CACHE_MODULE_PATH", drupal_get_path('module', 'context_reaction_no_cache'));
+
+/**
  * Implementation of hook_init().
  */
 function context_reaction_no_cache_init() {
@@ -38,7 +43,7 @@ function context_reaction_no_cache_context_plugins() {
   $plugins = array();
   $plugins['context_reaction_no_cache'] = array(
     'handler' => array(
-      'path'   => drupal_get_path('module', 'context_reaction_theme') .'/plugins',
+      'path'   =>  CONTEXT_REACTION_NO_CACHE_MODULE_PATH.'/plugins',
       'file'   => 'context_reaction_no_cache.inc',
       'class'  => 'context_reaction_no_cache',
       'parent' => 'context_reaction',
@@ -55,7 +60,7 @@ function context_reaction_no_cache_context_registry() {
   return array(
     'reactions' => array(
       'context_reaction_no_cache' => array(
-        'title' => t('No Cache'),
+        'title'  => t('No Cache'),
         'plugin' => 'context_reaction_no_cache',
       ),
     ),

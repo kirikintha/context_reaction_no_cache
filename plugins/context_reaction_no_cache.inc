@@ -17,9 +17,9 @@ class context_reaction_no_cache extends context_reaction {
       '#tree'    => TRUE,
       '#title'   => t('Caching: Core'),
       'no_cache' => array(
-        '#title'         => t('No Cache'),
+        '#title'         => t('Caching Options'),
         '#description'   => t('Choose to disable Drupal\'s core cache when this context is active.'),
-        '#type'          => 'radio',
+        '#type'          => 'radios',
         '#options'       => $options,
         '#default_value' => isset($values['no_cache']) ? $values['no_cache'] : 1,
       ),

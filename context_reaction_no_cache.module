@@ -1,0 +1,63 @@
+<?php
+/**
+ * @name Context Reaction: No Cache
+ * @file context_reaction_no_cache.module
+ * @category Cache Control
+ * @copyright 2011 Blue Tent Marketing
+ * @author Paul T. Huntsberger <paul@bluetent.com>
+ * @package Context
+ * @version 1.0.beta1
+ *
+ * This module creates a context reaction to control if Drupal's core cache is to be used or not.
+ */
+
+/**
+ * Implementation of hook_init().
+ */
+function context_reaction_no_cache_init() {
+  if ($plugin == context_get_plugin('reaction', 'context_reaction_no_cache')) {
+    $plugin->execute();
+  }
+}
+
+/**
+ * Implementation of hook_ctools_plugin_api().
+ * @internal Notify CTools that we'll be using the plugin API with Context module.
+ */
+function context_reaction_no_cache_ctools_plugin_api($module, $api) {
+  if ($module == 'context' && $api == 'plugins') {
+    return array('version' => 3);
+  }
+}
+
+/**
+ * Implementation of hook_context_plugins().
+ * @internal CTools plugin API hook for Context.
+ */
+function context_reaction_no_cache_context_plugins() {
+  $plugins = array();
+  $plugins['context_reaction_no_cache'] = array(
+    'handler' => array(
+      'path'   => drupal_get_path('module', 'context_reaction_theme') .'/plugins',
+      'file'   => 'context_reaction_no_cache.inc',
+      'class'  => 'context_reaction_no_cache',
+      'parent' => 'context_reaction',
+    ),
+  );
+  return $plugins;
+}
+
+/**
+ * Implementation of hook_context_registry().
+ * @internal Registry hook for conditions & reactions.
+ */
+function context_reaction_no_cache_context_registry() {
+  return array(
+    'reactions' => array(
+      'context_reaction_no_cache' => array(
+        'title' => t('No Cache'),
+        'plugin' => 'context_reaction_no_cache',
+      ),
+    ),
+  );
+}

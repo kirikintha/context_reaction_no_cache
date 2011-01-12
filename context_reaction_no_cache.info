@@ -1,0 +1,6 @@
+name           = "Context Reaction: No Cache"
+description    = "Adds a reaction to disable drupal caching. Depends on Context 3."
+package        = "Context"
+dependencies[] = context
+core           = "6.x"
+version        = "6.x-1.0-beta1"

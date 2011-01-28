@@ -1,6 +1,4 @@
 <?php
-// $Id: context_reaction_no_cache.inc,v 1.1.2.2 2010/10/25 18:47:40 brynbellomy Exp $
-
 /**
  * Expose themes as context reactions.
  */
@@ -10,6 +8,8 @@ class context_reaction_no_cache extends context_reaction {
    * Allow admins to choose the theme to be set.
    */
   function options_form($context) {
+    //Saved values.
+    $values = $this->fetch_from_context($context);
     //Radio Options.
     $options = array(t('Cache'), t('Do Not Cache'));
     //Form.

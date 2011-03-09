@@ -12,17 +12,54 @@
  */
 
 /**
- * @internal definitions.
+ * Implementation of hook_boot().
+ * Because hook_boot is called at a very volitile point in the bootstrap process, we have to keep it separate from the normal module worflow.
+ * Also, since logged in users receive non-cached pages, we really only need to invoke the bootstrap for anon users.
+ * Since this invokes the "context", and the context reaction passes through the original $conf,
+ * we aren't really altering the caching at all, unless the context is invoked.
+ * It's a strange work-around to force hook_init() right at the end of drupal's boot process, but it works.
  */
+function context_reaction_no_cache_boot() {
+  global $user, $conf;
+  //We should have a user here, so if we have an anonymous user, then we need to invoke the context plug in by running the full bootstrap "early".
+  //We also need to make sure the bootstrap is only invoking on the index.php side, not for any maintenance pages.
+  if (is_object($user) && strstr($_SERVER['SCRIPT_NAME'], 'index.php')) {
+    if ($user->uid == 0) {
+      //To invoke our context reaction on all page loads, invoke the bootstrap here at boot time.
+      //In effect, we need to hijack the boot and make it use hook_init() and the context reaction, which will set the $conf based on your conditions.
+      drupal_bootstrap(DRUPAL_BOOTSTRAP_FULL);
+      //Run our no-cache context here - so we can apply the proper cache mechanism for our mobile site.
+      $plugin = context_get_plugin('reaction', 'context_reaction_no_cache');
+      if (is_object($plugin)) {
+        //Get the global $conf, so we can alter per page request if needed. Keep me here or I do not work properly with different module weights, etc.
+        $conf = $plugin->execute($conf);
+      }
+      //Reset our bootstrap so that we only hijack for a second.
+      drupal_bootstrap(DRUPAL_BOOTSTRAP_EARLY_PAGE_CACHE);
+    }
+  }
+}
+
+/**
+ * @internal definitions.
+ * For some reason that I don't understand, when I use hook_boot - it calls everything on the page, not just hook_boot.
+ * So, for those occasions that it is not in here, I need to include common.inc - so that it works - so weird.
+ */
+if (!function_exists('drupal_get_path')) {
+  require_once('./includes/common.inc');
+}
 define("CONTEXT_REACTION_NO_CACHE_MODULE_PATH", drupal_get_path('module', 'context_reaction_no_cache'));
 
 /**
  * Implementation of hook_init().
+ * For pages that are not cached.
  */
 function context_reaction_no_cache_init() {
   $plugin = context_get_plugin('reaction', 'context_reaction_no_cache');
   if (is_object($plugin)) {
-    $plugin->execute();
+    //Get the global $conf, so we can alter per page request if needed. Keep me here or I do not work properly with different module weights, etc.
+    global $conf;
+    $conf = $plugin->execute($conf);
   }
 }
 
